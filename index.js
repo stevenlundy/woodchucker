@@ -5,6 +5,8 @@ const Hypher = require('hypher'),
     h = new Hypher(english);
 const Inflectors = require("en-inflectors").Inflectors;
 const request = require('request-promise-native');
+const WordPOS = require('wordpos'),
+    wordPOS = new WordPOS();
 
 
 function getHomophones(word) {
@@ -38,18 +40,34 @@ async function findNounVerbPairs(word1, word2) {
 
     let word1Homophones = await getHomophones(word1);
     word1Homophones = word1Homophones.filter(isCloseEnough);
+    word1Nouns = new Set(word1Homophones.filter(isNoun).map(i => i.word));
+    if (await wordPOS.isNoun(word1)) {
+        word1Nouns.add(word1);
+    }
+    word1Verbs = new Set(word1Homophones.filter(isVerb).map(i => i.word));
+    if (await wordPOS.isVerb(word1)) {
+        word1Verbs.add(word1);
+    }
     let word2Homophones = await getHomophones(word2);
     word2Homophones = word2Homophones.filter(isCloseEnough);
+    word2Nouns = new Set(word2Homophones.filter(isNoun).map(i => i.word));
+    if (await wordPOS.isNoun(word2)) {
+        word2Nouns.add(word2);
+    }
+    word2Verbs = new Set(word2Homophones.filter(isVerb).map(i => i.word));
+    if (await wordPOS.isVerb(word2)) {
+        word2Verbs.add(word2);
+    }
 
     let nounVerbPairs = [];
-    word1Homophones.filter(isNoun).forEach(function(noun) {
-        word2Homophones.filter(isVerb).forEach(function(verb) {
-            nounVerbPairs.push([noun.word, verb.word]);
+    word1Nouns.forEach(function(noun) {
+        word2Verbs.forEach(function(verb) {
+            nounVerbPairs.push([noun, verb]);
         });
     });
-    word2Homophones.filter(isNoun).forEach(function(noun) {
-        word1Homophones.filter(isVerb).forEach(function(verb) {
-            nounVerbPairs.push([noun.word, verb.word]);
+    word2Nouns.forEach(function(noun) {
+        word1Verbs.forEach(function(verb) {
+            nounVerbPairs.push([noun, verb]);
         });
     });
     return nounVerbPairs;
