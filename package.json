@@ -1,0 +1,17 @@
+{
+  "name": "woodchucker",
+  "version": "1.0.0",
+  "description": "An app to woodchuck any two syllable compound(ish) word",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "en-inflectors": "^1.0.12",
+    "hyphenation.en-us": "^0.2.1",
+    "hypher": "^0.2.5",
+    "indefinite-article": "0.0.2"
+  }
+}
