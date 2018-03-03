@@ -1,12 +1,11 @@
-const Hypher = require('hypher');
-const english = require('hyphenation.en-us');
-const h = new Hypher(english);
+const sentenceFormatter = require('./sentence-formatter');
 
+const Hypher = require('hypher'),
+    english = require('hyphenation.en-us'),
+    h = new Hypher(english);
 const Inflectors = require("en-inflectors").Inflectors;
-
-const indefiniteArticle = require('indefinite-article');
-
 const request = require('request-promise-native');
+
 
 function getHomophones(word) {
     return request({
@@ -18,32 +17,6 @@ function getHomophones(word) {
         },
         json: true
     });
-}
-
-function addMuchOrMany(noun) {
-    return noun.isCountable() ? "many " + noun.toPlural() : "much " + noun.toSingular();
-}
-
-function addIndefiniteArticle(noun) {
-    return indefiniteArticle(noun.toSingular()) + " " + noun.toSingular();
-}
-
-function getCondition(fullWord, noun, verb) {
-    return `if ${addIndefiniteArticle(fullWord)} could ${verb.toPresent()} ${noun.toPlural()}`;
-}
-
-function makeQuestion(fullWord, noun, verb) {
-    fullWord = new Inflectors(fullWord);
-    noun = new Inflectors(noun);
-    verb = new Inflectors(verb);
-    return `How ${addMuchOrMany(noun)} would ${addIndefiniteArticle(fullWord)} ${verb.toPresent()} ${getCondition(fullWord, noun, verb)}?`;
-}
-
-function makeAnswer(fullWord, noun, verb) {
-    fullWord = new Inflectors(fullWord);
-    noun = new Inflectors(noun);
-    verb = new Inflectors(verb);
-    return `${addIndefiniteArticle(fullWord)} would ${verb.toPresent()} lots of ${noun.toPlural()} ${getCondition(fullWord, noun, verb)}.`;
 }
 
 const makeSingular = word => new Inflectors(word).toSingular();
@@ -85,11 +58,11 @@ async function findNounVerbPairs(word1, word2) {
 async function getWoodChuckQAndAPairs(word) {
     let fullWord = makeSingular(word);
     let words = getSyllables(fullWord);
-    nounVerbPairs = await findNounVerbPairs(words[0], words[1]);
+    let nounVerbPairs = await findNounVerbPairs(words[0], words[1]);
     return nounVerbPairs.map(function(nounVerbPair) {
         return [
-            makeQuestion(fullWord, nounVerbPair[0], nounVerbPair[1]),
-            makeAnswer(fullWord, nounVerbPair[0], nounVerbPair[1])
+            sentenceFormatter.makeQuestion(fullWord, nounVerbPair[0], nounVerbPair[1]),
+            sentenceFormatter.makeAnswer(fullWord, nounVerbPair[0], nounVerbPair[1])
         ];
     });
 }
