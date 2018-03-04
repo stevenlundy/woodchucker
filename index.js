@@ -6,6 +6,9 @@ const nounVerbPairService = require('./noun-verb-pairs');
 async function getWoodChuckQAndAPairs(word) {
     let fullWord = utils.makeSingular(word);
     let words = utils.getSyllables(fullWord);
+    if (words.length !== 2) {
+        throw new Error("Input must be exactly two syllables. Word was broken into: " + words);
+    }
     let nounVerbPairs = await nounVerbPairService.get(words[0], words[1]);
     return nounVerbPairs.map(function(nounVerbPair) {
         return [
@@ -24,4 +27,6 @@ getWoodChuckQAndAPairs(word).then(function(qAndAPairs) {
         console.log(qAndA[1]);
         console.log("===================");
     });
+}).catch(function(e) {
+    console.error(e);
 });
