@@ -5,7 +5,10 @@ const nounVerbPairService = require('./noun-verb-pairs');
 
 async function getWoodChuckQAndAPairs(word) {
     let fullWord = utils.makeSingular(word);
-    let words = utils.getSyllables(fullWord);
+    let words = utils.getSyllablesByNLP(fullWord);
+    if (words.length !== 2) {
+        words = utils.getSyllablesByHyphenation(fullWord);
+    }
     if (words.length !== 2) {
         throw new Error("Input must be exactly two syllables. Word was broken into: " + words);
     }

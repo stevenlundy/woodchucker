@@ -10,6 +10,8 @@
   "license": "ISC",
   "dependencies": {
     "en-inflectors": "^1.0.12",
+    "hyphenation.en-us": "^0.2.1",
+    "hypher": "^0.2.5",
     "indefinite-article": "0.0.2",
     "nlp-syllables": "0.0.5",
     "request": "^2.83.0",
