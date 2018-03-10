@@ -16,6 +16,10 @@ function getHomophones(word) {
         },
         headers: {'Cache-Control': 'max-age=86400'},
         json: true
+    }).catch(function(err) {
+        console.log(err.response.statusCode + " " + err.response.statusMessage);
+        console.log("Error getting homophones for " + word);
+        return [];
     });
 }
 
