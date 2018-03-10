@@ -13,9 +13,10 @@
     "hyphenation.en-us": "^0.2.1",
     "hypher": "^0.2.5",
     "indefinite-article": "0.0.2",
+    "lodash": "^4.17.5",
     "nlp-syllables": "0.0.5",
     "request": "^2.83.0",
-    "request-promise-native": "^1.0.5",
+    "throttled-request": "^0.1.1",
     "wordpos": "^1.1.5"
   }
 }

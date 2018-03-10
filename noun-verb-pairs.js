@@ -1,27 +1,43 @@
-const request = require('request-promise-native');
+const memoize = require('lodash/memoize');
+const request = require('request'),
+    throttledRequest = require('throttled-request')(request);
 const WordPOS = require('wordpos'),
     wordPOS = new WordPOS();
 
 
+throttledRequest.configure({
+    requests: 10,
+    milliseconds: 1000
+});
+
 const SIMILARITY_THRESHOLD = 97;
 const FREQUENCY_THRESHOLD = 1;
 
-function getHomophones(word) {
-    return request({
-        uri: 'https://api.datamuse.com/words',
-        qs: {
-            sl: word, // sounds like word
-            md: 'fp', // include metadata for frequency (f) and part of speech (p)
-            max: 50 // limit to 50 responses
-        },
-        headers: {'Cache-Control': 'max-age=86400'},
-        json: true
+const getHomophones = memoize(function(word) {
+    return new Promise(function(resolve, reject) {
+        throttledRequest({
+            uri: 'https://api.datamuse.com/words',
+            qs: {
+                sl: word, // sounds like word
+                md: 'fp', // include metadata for frequency (f) and part of speech (p)
+                max: 50 // limit to 50 responses
+            },
+            headers: {'Cache-Control': 'max-age=86400'},
+            json: true
+        }, function(err, res, body) {
+            if (err) {
+                err.response = res;
+                return reject(err);
+            } else {
+                return resolve(body);
+            }
+        });
     }).catch(function(err) {
-        console.log(err.response.statusCode + " " + err.response.statusMessage);
+        console.log(err.response.statusCode, err.response.statusMessage);
         console.log("Error getting homophones for " + word);
         return [];
     });
-}
+});
 
 const getFrequency = function(item) {
     let freqTag = item.tags.find(tag => tag.startsWith("f:"));
