@@ -80,3 +80,5 @@ module.exports.get = async function(word1, word2) {
     }));
     return nounVerbPairs;
 };
+module.exports.getHomophones = getHomophones;
+module.exports.getFrequency = getFrequency;

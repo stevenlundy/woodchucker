@@ -88,3 +88,4 @@ if (require.main === module) {
 }
 
 module.exports.checkWordForNounVerbPairs = checkWordForNounVerbPairs;
+module.exports.getLinesFromFile = getLinesFromFile;
