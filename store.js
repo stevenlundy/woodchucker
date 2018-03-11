@@ -1,10 +1,28 @@
 const knex = require('knex')(require('./knexfile'))
 
 
+function insertIgnore(knexQuery) {
+    // knex doesn't have the functionality to ignore duplicate
+    // i.e only insert if data does not exist
+    // We convert to a query string, splice in the ignore, and run it
+    return knex.raw(knexQuery.toString().replace('insert', 'INSERT IGNORE'));
+}
+
+function onDuplicateKey(knexQuery, onDuplicateQuery) {
+    // knex doesn't have the functionality to update on duplicate key
+    // i.e if data exists, update instead
+    // We convert to a query string, concat onDuplicateQuery, and run it
+    return knex.raw(
+        knexQuery.toString() +
+        ' ON DUPLICATE KEY ' +
+        onDuplicateQuery.toString().replace(' set ', ' ')
+    );
+}
+
 module.exports = {
 
     createWord: function(value, frequency) {
-        return knex('word').insert({value, frequency});
+        return onDuplicateKey(knex('word').insert({value, frequency}), knex.update({frequency}));
     },
 
     getWordByValue: function(value) {
