@@ -29,6 +29,10 @@ module.exports = {
         return knex.select('*').from('word').where({value});
     },
 
+    getAllWords: function() {
+        return knex.select('*').from('word');
+    },
+
     createSentence: function(word_id, noun_id, verb_id) {
         return knex('sentence').insert({word_id, noun_id, verb_id});
     },

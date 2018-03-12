@@ -12,21 +12,36 @@ async function addWordToDatabase(word) {
         syllables = utils.getSyllablesByHyphenation(word);
     }
     if (syllables.length > 2) {
-        return;
+        throw new Error("too many syllables");
     }
     let matches = await nounVerbPairService.getHomophones(word);
     let match = matches.find(w => w.word.toLowerCase() === word.toLowerCase());
     if (!match) {
-        return;
+        throw new Error("match not found");
     }
     let frequency = nounVerbPairService.getFrequency(match);
     await store.createWord(word, frequency);
-    console.log(word + ' inserted');
 }
 
 async function addWordsToDatabase(words) {
+    let existingWords = await store.getAllWords();
+    existingWords = existingWords.reduce(function(allWords, word) {
+        allWords[word.value] = true;
+        return allWords;
+    }, {});
     for (var i = 0; i < words.length; i++) {
-        await addWordToDatabase(words[i]);
+        let message = `${i}/${words.length} "${words[i]}": `;
+        if (!existingWords[words[i]]) {
+            try {
+                await addWordToDatabase(words[i]);
+                message += `inserted`;
+            } catch (err) {
+                message += `skipped (${err})`;
+            }
+        } else {
+            message += `skipped (already in database)`;
+        }
+        console.log(message);
     }
 }
 
