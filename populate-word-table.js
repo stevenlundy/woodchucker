@@ -20,7 +20,7 @@ async function addWordToDatabase(word) {
         throw new Error("match not found");
     }
     let frequency = nounVerbPairService.getFrequency(match);
-    await store.createWord(word, frequency);
+    await store.createWord({word, frequency});
 }
 
 async function addWordsToDatabase(words) {

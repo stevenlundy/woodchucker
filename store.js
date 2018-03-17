@@ -21,11 +21,11 @@ function onDuplicateKey(knexQuery, onDuplicateQuery) {
 
 module.exports = {
 
-    createWord: function(value, frequency) {
+    createWord: function({value, frequency}) {
         return onDuplicateKey(knex('word').insert({value, frequency}), knex.update({frequency}));
     },
 
-    getWordByValue: function(value) {
+    getWordByValue: function({value}) {
         return knex.select('*').from('word').where({value});
     },
 
@@ -33,11 +33,11 @@ module.exports = {
         return knex.select('*').from('word');
     },
 
-    createSentence: function(word_id, noun_id, verb_id) {
+    createSentence: function({word_id, noun_id, verb_id}) {
         return knex('sentence').insert({word_id, noun_id, verb_id});
     },
 
-    getSentence: function(id) {
+    getSentence: function({id}) {
         return knex
             .select('w.value as word', 'n.value as noun', 'v.value as verb')
             .from({s: 'sentence'})
