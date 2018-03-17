@@ -1,6 +1,7 @@
 var fs = require('fs');
 
 const nounVerbPairService = require('./noun-verb-pairs');
+const store = require('./store');
 const utils = require('./utils');
 
 const UNIX_DICT_PATH = '/usr/share/dict/words';
@@ -65,6 +66,10 @@ async function getNounVerbPairsForWords(words) {
 function appendNounVerbToCSV(nounVerbPairs) {
     let text = nounVerbPairs.map(pair => [pair.noun, pair.verb, pair.word].toString()).join('\n') + '\n';
     return appendFile(OUT_FILE_PATH, text);
+}
+
+function storeNounVerbPairs(nounVerbPairs) {
+    return Promise.all(nounVerbPairs.map(store.createSentenceByWords))
 }
 
 async function bulkProcessNounVerbPairs(words, persistData) {

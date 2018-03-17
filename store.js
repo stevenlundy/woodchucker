@@ -19,6 +19,10 @@ function onDuplicateKey(knexQuery, onDuplicateQuery) {
     );
 }
 
+function createSentence({word_id, noun_id, verb_id}) {
+    return knex('sentence').insert({word_id, noun_id, verb_id});
+}
+
 module.exports = {
 
     createWord: function({value, frequency}) {
@@ -33,8 +37,14 @@ module.exports = {
         return knex.select('*').from('word');
     },
 
-    createSentence: function({word_id, noun_id, verb_id}) {
-        return knex('sentence').insert({word_id, noun_id, verb_id});
+    createSentence: createSentence,
+
+    createSentenceByWords: function({word, noun, verb}) {
+        return knex
+            .first('w.id as word_id', 'n.id as noun_id', 'v.id as verb_id')
+            .from({w: 'word', n: 'word', v: 'word'})
+            .where({'w.value': word, 'n.value': noun, 'v.value': verb})
+            .then(createSentence);
     },
 
     getSentence: function({id}) {
