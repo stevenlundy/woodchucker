@@ -44,7 +44,13 @@ module.exports = {
             .first('w.id as word_id', 'n.id as noun_id', 'v.id as verb_id')
             .from({w: 'word', n: 'word', v: 'word'})
             .where({'w.value': word, 'n.value': noun, 'v.value': verb})
-            .then(createSentence);
+            .then(function(row) {
+                if (!row || !row.word_id || !row.noun_id || !row.verb_id) {
+                    console.log("ERROR for ", word, noun, verb);
+                    return;
+                }
+                return insertIgnore(createSentence(row));
+            });
     },
 
     getSentence: function({id}) {
