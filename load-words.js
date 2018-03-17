@@ -51,7 +51,7 @@ async function getNounVerbPairsForWords(words) {
         } catch (err) {
             nounVerbPairs = [];
         }
-        nounVerbPairs.forEach(pair => pair.push(word));
+        nounVerbPairs.forEach(pair => pair.word = word);
         return nounVerbPairs;
     }));
     return nounVerbPairsPerWord.reduce(function(allNounVerbPairs, nounVerbPairs) {
@@ -63,7 +63,7 @@ async function getNounVerbPairsForWords(words) {
 }
 
 function appendNounVerbToCSV(nounVerbPairs) {
-    let text = nounVerbPairs.map(pair => pair.toString()).join('\n') + '\n';
+    let text = nounVerbPairs.map(pair => [pair.noun, pair.verb, pair.word].toString()).join('\n') + '\n';
     return appendFile(OUT_FILE_PATH, text);
 }
 

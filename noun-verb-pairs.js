@@ -74,7 +74,7 @@ module.exports.get = async function(word1, word2) {
         let verbs = await getVerbHomophones(words[1]);
         nouns.forEach(function(noun) {
             verbs.forEach(function(verb) {
-                nounVerbPairs.push([noun, verb]);
+                nounVerbPairs.push({noun, verb});
             });
         });
     }));
